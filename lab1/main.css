@@ -1,0 +1,23 @@
+#canvas1, #canvas2, #canvas3, #canvas4 {
+    display: block;
+    border: 1px solid #000;
+    margin: auto;
+    background-color: rgb(235, 235, 235);
+}
+#message1, #message2, #message3, #message4 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+}
+.container {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+hr {
+    border: 1px solid #000;
+}
