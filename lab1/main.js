@@ -47,43 +47,22 @@ function buildEquotion(point1, point2, point) {
 }
 
 function checkLocation(point1, point2, point) {
-    const message = document.getElementById('message1');
     const res = buildEquotion(point1, point2, point);
-    if (res > 0) message.innerHTML = `The point is lie to the right`;
-    else if (res < 0) message.innerHTML = `The point is lie to the left`;
-    else message.innerHTML = `The point is belong to line`;
-}
-
-function checkLocationn(point1, point2, point) {
-    const res = buildEquotion(point1, point2, point);
-    if (res > 0) message.innerHTML = `The point is lie to the right`;
-    else if (res < 0) message.innerHTML = `The point is lie to the left`;
-    else message.innerHTML = `The point is belong to line`;
+    if (res > 0) return 1;
+    else if (res < 0) return -1;
+    else return 0;
 }
 
 function checkIntersection(p) {
-    const message = document.getElementById('message2');
     const d = {
         d1: buildEquotion(p.point1, p.point2, p.point3),
         d2: buildEquotion(p.point1, p.point2, p.point4),
         d3: buildEquotion(p.point3, p.point4, p.point1),
         d4: buildEquotion(p.point3, p.point4, p.point2)
     }
-    if ((d.d1 * d.d2 <= 0) && (d.d3 * d.d4 <= 0)) message.innerHTML = `These lines are intersect`;
-    else if (d.d1 === d.d2 === d.d3 === d.d4) message.innerHTML = `These lines are match up`;
-    else message.innerHTML = `These lines aren't intersect`;
-}
-
-function checkIntersectionn(p) {
-    var c = 0;
-    const d = {
-        d1: buildEquotion(p.point1, p.point2, p.point3),
-        d2: buildEquotion(p.point1, p.point2, p.point4),
-        d3: buildEquotion(p.point3, p.point4, p.point1),
-        d4: buildEquotion(p.point3, p.point4, p.point2)
-    }
-    if ((d.d1 * d.d2 <= 0) && (d.d3 * d.d4 <= 0)) c++;
-    return c;
+    if ((d.d1 * d.d2 <= 0) && (d.d3 * d.d4 <= 0)) return 1;
+    else if (d.d1 === d.d2 === d.d3 === d.d4) return 0;
+    else return -1;
 }
 
 function drawPolygon(ctx, p) {
@@ -92,64 +71,46 @@ function drawPolygon(ctx, p) {
         else drawLine(ctx, p[i], p[i + 1], `p${i + 1}`, `p${i + 2}`)
     }
 }
-function checkPolygon(p) {
-    var p1;
-    var d = 0;
-    outer: for (let i = 0; i < p.length - 1; i++) {
-        d++;
-        for (let j = i + 2; j < p.length; j++) {
-            p1 = {
-                point1: p[i],
-                point2: p[i + 1],
-                point3: p[j],
-                point4: p[j + 1],
-            }
-            if (j === p.length - 1) {
-                // console.log(j);
-                // console.log(p[0]);
-                p1.point4 = p[0];
-            }
-              
-            if (checkIntersectionn(p1) === 1) {
-                // console.log('not simple');
-                // console.log(d);
-                break outer;
-            }
+function checkPolygon(points) {
+    for (let i = 0; i < points.length; i++) {
+        for (let j = 0; j < points.length; j++) {
+            let point1 = points[i];
+            let point2 = i === points.length - 1 ? points[0] : points[i + 1];
+            let point3 = points[j];
+            let point4 = j === points.length - 1 ? points[0] : points[j + 1];
+            if (point1 === point3 || point2 === point4 || point1 === point4 || point2 === point3) continue;
+            if (checkIntersection({ point1, point2, point3, point4 }) === 1) return false;
         }
     }
+    return true;
 }
 
 function checkConvex(p) {
-    const arr = [];
-    for (let i = 0; i < p.length; i++) {
-        for (let j = i + 2; j < p.length; j++) {
-            console.log(j);
-            const res = buildEquotion(p[i], p[i + 1], p[j]);
-            console.log(res);
-            arr.push(res);
-        }
-        for (let j = 0; j < i + 2; j++) {
-            console.log(j);
-            const res = buildEquotion(p[i], p[i + 1], p[j]);
-            console.log(res);
-            arr.push(res);
-        }
+    if (!checkPolygon(p)) return false;
+    const sign = checkLocation(p[p.length - 1], p[0], p[1]);
+    for (let i = 0; i < p.length - 1; i++) {
+        const p1 = p[i];
+        const p2 = p[i + 1];
+        const p0 = (i === p.length - 2) ? p[0] : p[i + 2];
+        if (sign !== checkLocation(p1, p2, p0)) return false;
     }
-    console.log(arr);
-    if (arr.every(elem  => elem > 0) || arr.every(elem  => elem < 0)) return true;
-    else return false;
+    return true;
 }
 
 function task1() {
+    const message = document.getElementById('message1');
     const point1 = getRandomPoint(canvas1.width, canvas1.height);
     const point2 = getRandomPoint(canvas1.width, canvas1.height);
     const point = getRandomPoint(canvas1.width, canvas1.height);
     drawLine(ctx1, point1, point2, 'p1', 'p2');
     drawPoint(ctx1, point, 'p0');
-    checkLocation(point1, point2, point);
+    if (checkLocation(point1, point2, point) === 1) message.innerHTML = `The point is lie to the right`;
+    else if (checkLocation(point1, point2, point) === -1) message.innerHTML = `The point is lie to the left`;
+    else message.innerHTML = `The point is belong to line`;
 }
 
 function task2() {
+    const message = document.getElementById('message2');
     const p = {
         point1: getRandomPoint(canvas2.width, canvas2.height),
         point2: getRandomPoint(canvas2.width, canvas2.height),
@@ -158,14 +119,18 @@ function task2() {
     }
     drawLine(ctx2, p.point1, p.point2, 'p1', 'p2');
     drawLine(ctx2, p.point3, p.point4, 'p3', 'p4');
-    checkIntersection(p); 
+    if (checkIntersection(p) === 1) message.innerHTML = `These lines are intersect`;
+    else if (checkIntersection(p) === 0) message.innerHTML = `These lines are match up`;
+    else message.innerHTML = `These lines aren't intersect`;
 }
 
 function task3() {
+    const message = document.getElementById('message3');
     const p = [];
     for (let i = 0; i < 5; i++) p.push(getRandomPoint(canvas3.width, canvas3.height));
     drawPolygon(ctx3, p);
-    checkPolygon(p);
+    if (checkPolygon(p)) message.innerHTML = `This is a simple polygon`;
+    else message.innerHTML = `This isn't a simple polygon`;
 }
 
 function task4() {
