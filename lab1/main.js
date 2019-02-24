@@ -71,6 +71,7 @@ function drawPolygon(ctx, p) {
         else drawLine(ctx, p[i], p[i + 1], `p${i + 1}`, `p${i + 2}`)
     }
 }
+
 function checkPolygon(points) {
     for (let i = 0; i < points.length; i++) {
         for (let j = 0; j < points.length; j++) {
