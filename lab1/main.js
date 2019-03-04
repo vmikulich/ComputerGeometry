@@ -128,7 +128,7 @@ function task2() {
 function task3() {
     const message = document.getElementById('message3');
     const p = [];
-    for (let i = 0; i < 5; i++) p.push(getRandomPoint(canvas3.width, canvas3.height));
+    for (let i = 0; i < 10; i++) p.push(getRandomPoint(canvas3.width, canvas3.height));
     drawPolygon(ctx3, p);
     if (checkPolygon(p)) message.innerHTML = `This is a simple polygon`;
     else message.innerHTML = `This isn't a simple polygon`;
@@ -137,7 +137,7 @@ function task3() {
 function task4() {
     const message = document.getElementById('message4');
     const p = [];
-    for (let i = 0; i < 5; i++) p.push(getRandomPoint(canvas4.width, canvas4.height));
+    for (let i = 0; i < 4; i++) p.push(getRandomPoint(canvas4.width, canvas4.height));
     drawPolygon(ctx4, p);
     if(checkConvex(p)) message.innerHTML = `This is a convex polygon`;
     else message.innerHTML = `This isn't a convex polygon`;

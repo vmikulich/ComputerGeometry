@@ -33,6 +33,10 @@ function buildEquotion(point1, point2, point) {
     return res;
 }
 
+function createObjectPoint(x, y) {
+    return {x, y};
+}
+
 function checkIntersection(p) {
     const d = {
         d1: buildEquotion(p.point1, p.point2, p.point3),
@@ -49,6 +53,13 @@ function checkIntersection(p) {
     else {
         return -1;
     }
+}
+
+function checkLocation(point1, point2, point) {
+    const res = buildEquotion(point1, point2, point);
+    if (res > 0) return 1;
+    else if (res < 0) return -1;
+    else return 0;
 }
 
 function drawPolygon(ctx, p) {
@@ -83,6 +94,16 @@ function getRayToRightBorder(point) {
     return [point, {x: canvas.width - 5, y: point.y}]
 }
 
+function isPointBelongToRay(rayPoints, polyPoints) {
+    for (let i = 0; i < polyPoints.length; i++) {
+        if (checkLocation(rayPoints[0], rayPoints[1], polyPoints[i]) === 0) {
+            console.log(i);
+            return i;
+        }
+    }
+    return null;
+}
+
 function isPointBelongToPolygon(point, polyPoints) {
     const ray = getRayToRightBorder(point);
     let res = 0;
@@ -93,18 +114,31 @@ function isPointBelongToPolygon(point, polyPoints) {
             point3: ray[0],
             point4: ray[1]
         }
-        if (checkIntersection(points) === 1) res++;
+        if (checkIntersection(points) === 1) {
+            res++;
+        }
+    }
+    const index = isPointBelongToRay(ray, polyPoints);
+    console.log(index);
+    if (index !== null && checkLocation(ray[0], ray[1], polyPoints[index + 1]) * checkLocation(ray[0], ray[1], polyPoints[index - 1]) < 0) {
+        res--;
     }
     return res % 2 === 1;
 }
 
 function task() {
+    const p = [
+        createObjectPoint(100, 100),
+        createObjectPoint(200, 200),
+        createObjectPoint(100, 300),
+    ]
     const message = document.getElementById('message');
-    const points = getSimplePolygon(5);
-    const point = getRandomPoint(canvas.width, canvas.height);
-    drawPolygon(ctx, points);
-    drawPoint(ctx, point, 'p0');
-    message.innerHTML = isPointBelongToPolygon(point, points) ? `Given point is belong to polygon` : `Given point isn't belong to polygon`;
+    const points = getSimplePolygon(3);
+    const point = getRandomPoint(canvas.width - 5, canvas.height - 5);
+    const testPoint = createObjectPoint(150, 200);
+    drawPolygon(ctx, p);
+    drawPoint(ctx, testPoint, 'p0');
+    message.innerHTML = isPointBelongToPolygon(testPoint, p) ? `Given point is belong to polygon` : `Given point isn't belong to polygon`;
 }
 
 task();
